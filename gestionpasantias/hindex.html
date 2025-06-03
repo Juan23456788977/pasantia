@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mi Sitio Web Dinámico - Gestión Pasantías</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #424242 0%, #f8f8f8 100%);
+        color: #ffffff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        scroll-behavior: smooth;
+        line-height: 1.4;
+    }
+    header {
+        background-color: rgba(0, 0, 0, 0.3);
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(49, 238, 2, 0.432);
+        flex-wrap: wrap;
+    }
+    header h1 {
+        font-size: 1.8rem;
+        letter-spacing: 2px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
+    }
+    .nav-btn {
+        background: #555;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background 0.3s ease, transform 0.2s ease;
+        font-weight: 700;
+    }
+    .nav-btn:hover {
+        background: #ffd700;
+        color: #000;
+        transform: scale(1.05);
+    }
+    .nav-btn.active {
+        background: #ffd700;
+        color: #000;
+    }
+    main {
+        flex-grow: 1;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 40px 20px;
+        min-height: 75vh;
+    }
+    #content {
+        width: 100%;
+        max-width: 960px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        min-height: 500px;
+        overflow-y: auto;
+    }
+    h2 {
+        font-size: 2.2rem;
+        margin-bottom: 20px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #ffd700;
+    }
+    p, label {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+    ul li {
+        margin-bottom: 10px;
+    }
+    .btn-primary, button {
+        background: #ffd700;
+        color: #000;
+        font-weight: 700;
+        padding: 12px 28px;
+        font-size: 1.1rem;
+        border-radius: 50px;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+        transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+        margin-top: 10px;
+        text-align: center;
+        display: inline-block;
+    }
+    .btn-primary:hover, button:hover {
+        background: #ffc200;
+        box-shadow: 0 8px 20px rgba(255, 194, 0, 0.8);
+        transform: scale(1.05);
+    }
+    form {
+        max-width: 600px;
+        margin: 0 auto 30px auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    textarea,
+    select,
+    input[type="number"] {
+        width: 90%;
+        max-width: 400px;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        border: none;
+        font-size: 1rem;
+        outline: none;
+    }
+    textarea {
+        resize: vertical;
+        font-family: inherit;
+        min-height: 80px;
+    }
+    #form-status, #login-status, #comentarios-status, #admin-status-mod, #status-registrar-pasante, #status-registrar-empresa {
+        margin-top: 10px;
+        font-weight: 700;
+        min-height: 24px;
+        text-align: center;
+    }
+    section.listado {
+        margin-top: 20px;
+    }
+    section.listado ul {
+        max-height: 200px;
+        overflow-y: auto;
+        padding-left: 1.2em;
+        background: rgba(255 255 255 / 0.1);
+        border-radius: 8px;
+    }
+    .comentario {
+        background: rgba(255 255 255 / 0.15);
+        padding: 8px 12px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        text-align: left;
+        font-size: 0.95rem;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    label[for="comentario-agregar"] {
+        margin-top: 5px;
+        font-weight: 700;
+        color: #ffd700;
+        align-self: flex-start;
+    }
+    #ul-pasantes::-webkit-scrollbar,
+    #ul-empresas::-webkit-scrollbar,
+    #ul-moderadores::-webkit-scrollbar,
+    #ul-asignaciones::-webkit-scrollbar,
+    #comentarios-list::-webkit-scrollbar {
+        width: 8px;
+    }
+    #ul-pasantes::-webkit-scrollbar-thumb,
+    #ul-empresas::-webkit-scrollbar-thumb,
+    #ul-moderadores::-webkit-scrollbar-thumb,
+    #ul-asignaciones::-webkit-scrollbar-thumb,
+    #comentarios-list::-webkit-scrollbar-thumb {
+        background: #ffd700;
+        border-radius: 10px;
+    }
+    @media (max-width: 600px) {
+        header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        nav {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .nav-btn {
+            margin: 5px 3px;
+            min-width: 100%;
+            font-size: 0.95rem;
+        }
+        main {
+            padding: 20px 10px;
+        }
+        #content {
+            padding: 20px;
+            max-height: unset;
+            min-height: auto;
+        }
+        h2 {
+            font-size: 1.8rem;
+        }
+    }
+    footer {
+        background-color: rgba(0, 0, 0, 0.3);
+        text-align: center;
+        padding: 12px 20px;
+        font-size: 0.9rem;
+        color: #ccc;
+        margin-top: auto;
+        user-select: none;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>Mi Sitio Web - Gestión Pasantías</h1>
+    <nav id="nav-bar" aria-label="Menú de navegación principal">
+        <!-- Menú dinámico -->
+    </nav>
+</header>
+<main>
+    <section id="content" tabindex="0" aria-live="polite">
+        <!-- Contenido dinámico cargado aquí -->
+    </section>
+</main>
+<footer>
+    &copy; 2025 Mi Sitio Web. Todos los derechos reservados.
+</footer>
+<script>
+// --- JS igual que antes, pero todo por AJAX y la vista bonita ---
+let currentUser = null;
+
+function renderMenu() {
+    const nav = document.getElementById('nav-bar');
+    nav.innerHTML = '';
+    nav.appendChild(crearNavButton('Inicio', 'inicio'));
+    nav.appendChild(crearNavButton('Servicios', 'servicios'));
+    nav.appendChild(crearNavButton('Nosotros', 'nosotros'));
+    nav.appendChild(crearNavButton('Contacto', 'contacto'));
+    if (currentUser) {
+        if (currentUser.role === 'admin') {
+            nav.appendChild(crearNavButton('Admin - Gestión', 'admin'));
+        } else if (currentUser.role === 'moderador') {
+            nav.appendChild(crearNavButton('Moderador - Gestión', 'moderador'));
+        }
+        const btnLogout = document.createElement('button');
+        btnLogout.textContent = `Cerrar sesión (${currentUser.nombre})`;
+        btnLogout.className = 'nav-btn';
+        btnLogout.onclick = logout;
+        nav.appendChild(btnLogout);
+    } else {
+        nav.appendChild(crearNavButton('Login', 'login'));
+    }
+}
+
+function crearNavButton(text, page) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'nav-btn';
+    btn.textContent = text;
+    btn.dataset.page = page;
+    btn.onclick = () => loadPage(page);
+    return btn;
+}
+
+const pages = {
+    inicio: `
+        <div class="hero">
+            <h2>Bienvenido a Mi Página de Inicio</h2>
+            <p>Descubre contenido interesante, explora nuestros servicios y conoce más sobre nosotros. Estamos aquí para ayudarte a crecer y tener éxito en tu pasantía.</p>
+        </div>
+    `,
+    servicios: `
+        <h2>Servicios</h2>
+        <p>Ofrecemos una amplia gama de servicios personalizados para satisfacer las necesidades específicas de las empresas. Desde desarrollo web y marketing digital hasta consultoría estratégica, nuestros pasantes están preparados para ayudarles a alcanzar sus objetivos.</p>
+        <ul>
+            <li>Desarrollo Web Profesional</li>
+            <li>Marketing Digital y SEO</li>
+            <li>Consultoría de Negocios</li>
+            <li>Diseño gráfico y branding</li>
+            <li>Mantenimiento de dispositivos</li>
+            <li>Redes y uso de apps de ofimática</li>
+        </ul>
+    `,
+    nosotros: `
+        <h2>Nosotros</h2>
+        <p>Somos un equipo apasionado y dedicado a brindar soluciones innovadoras y eficientes que impulsen a los pasantes a alcanzar éxito. Nuestra misión es transformar ideas en realidades a través de creatividad, tecnología y compromiso con la calidad.</p>
+        <p>Con años de experiencia en el sector, nos enorgullecemos de trabajar mano a mano con distintas empresas para crear pasantes que marcan la diferencia.</p>
+    `,
+    contacto: `
+        <h2>Contacto</h2>
+        <p>¿Tienes preguntas? No dudes en contactarnos a través del siguiente formulario. Estamos aquí para ayudarte.</p>
+        <form id="contact-form" aria-label="Formulario de contacto">
+            <input type="text" id="name" name="name" placeholder="Nombre completo" required aria-required="true" />
+            <input type="email" id="email" name="email" placeholder="Correo electrónico" required aria-required="true" />
+            <textarea id="message" name="message" placeholder="Tu mensaje" rows="5" required aria-required="true"></textarea>
+            <button type="submit">Enviar Mensaje</button>
+            <p id="form-status" role="alert"></p>
+        </form>
+    `,
+    login: `
+        <h2>Iniciar Sesión</h2>
+        <form id="login-form" aria-label="Formulario de inicio de sesión">
+            <input type="email" id="email-login" name="email" placeholder="Correo electrónico" required aria-required="true" autocomplete="username"/>
+            <input type="password" id="password-login" name="password" placeholder="Contraseña" required aria-required="true" autocomplete="current-password"/>
+            <select id="role-login" name="role" aria-label="Rol" required>
+                <option value="" disabled selected>Selecciona tipo de usuario</option>
+                <option value="pasante">Pasante</option>
+                <option value="moderador">Moderador</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button type="submit">Iniciar Sesión</button>
+            <p id="login-status" role="alert"></p>
+        </form>
+    `,
+    admin: `
+        <h2>Área Administrador</h2>
+        <section>
+            <h3>Agregar Moderador</h3>
+            <form id="form-agregar-moderador" aria-label="Formulario de agregar moderador">
+                <input type="text" id="admin-nombre-moderador" placeholder="Nombre completo" required aria-required="true" autocomplete="name" />
+                <input type="email" id="admin-email-moderador" placeholder="Correo electrónico" required aria-required="true" autocomplete="email" />
+                <input type="password" id="admin-password-moderador" placeholder="Contraseña" required aria-required="true" autocomplete="new-password" />
+                <button type="submit">Agregar Moderador</button>
+                <p id="admin-status-mod" style="margin-top:8px;"></p>
+            </form>
+        </section>
+    `,
+    moderador: `
+        <h2>Área de Moderador</h2>
+        <section>
+            <h3>Registrar Pasante</h3>
+            <form id="form-registrar-pasante" aria-label="Formulario de registro de pasantes">
+                <input type="text" id="mod-nombre-pasante" placeholder="Nombre completo" required aria-required="true" autocomplete="name" />
+                <input type="email" id="mod-email-pasante" placeholder="Correo electrónico" required aria-required="true" autocomplete="email" />
+                <input type="password" id="mod-password-pasante" placeholder="Contraseña" required aria-required="true" autocomplete="new-password" />
+                <label for="mod-nota-pasante" style="color:#ffd700; font-weight:700;">Nota (0-20):</label>
+                <input type="number" id="mod-nota-pasante" min="0" max="20" placeholder="Ej: 18" required aria-required="true" />
+                <label for="mod-horas-totales" style="color:#ffd700; font-weight:700;">Horas Totales Requeridas:</label>
+                <input type="number" id="mod-horas-totales" min="0" placeholder="Ej: 160" required aria-required="true" />
+                <button type="submit">Agregar Pasante</button>
+                <p id="status-registrar-pasante"></p>
+            </form>
+        </section>
+        <section style="margin-top: 30px;">
+            <h3>Registrar Empresa</h3>
+            <form id="form-registrar-empresa" aria-label="Formulario de registro de empresas">
+                <input type="text" id="mod-nombre-empresa" placeholder="Nombre de la empresa" required aria-required="true" autocomplete="organization" />
+                <select id="mod-importancia-empresa" required aria-required="true" aria-label="Nivel de importancia de la empresa">
+                    <option value="" disabled selected>Seleccione nivel de importancia</option>
+                    <option value="Importante">Importante</option>
+                    <option value="Medio importante">Medio importante</option>
+                    <option value="No tan importante">No tan importante</option>
+                </select>
+                <input type="text" id="mod-ubicacion-empresa" placeholder="Ubicación de la empresa" required aria-required="true" />
+                <button type="submit">Agregar Empresa</button>
+                <p id="status-registrar-empresa"></p>
+            </form>
+        </section>
+        <section style="margin-top: 40px;">
+            <h3>Listado de Pasantes</h3>
+            <div id="listado-pasantes-moderador" style="max-height: 240px; overflow-y:auto; text-align:left; background:rgba(255 255 255 / 0.1); padding:10px; border-radius:8px;"></div>
+        </section>
+        <section style="margin-top: 40px;">
+            <h3>Listado de Empresas</h3>
+            <ul id="listado-empresas-moderador" style="max-height: 180px; overflow-y:auto; list-style:none; padding-left:0;"></ul>
+        </section>
+    `
+};
+
+function loadPage(page) {
+    const contentEl = document.getElementById('content');
+    contentEl.innerHTML = pages[page] || '<p>Página no encontrada.</p>';
+    document.querySelectorAll('#nav-bar .nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.page === page);
+    });
+    switch (page) {
+        case 'contacto': iniciarContactForm(); break;
+        case 'login': iniciarLoginForm(); break;
+        case 'admin': if (!currentUser || currentUser.role !== 'admin') { alert('Acceso denegado.'); loadPage('inicio'); } else iniciarAdminArea(); break;
+        case 'moderador': if (!currentUser || currentUser.role !== 'moderador') { alert('Acceso denegado.'); loadPage('inicio'); } else iniciarModeradorArea(); break;
+    }
+}
+function iniciarContactForm() {
+    const form = document.getElementById('contact-form');
+    const statusEl = document.getElementById('form-status');
+    if (!form || !statusEl) return;
+    form.onsubmit = e => {
+        e.preventDefault();
+        statusEl.style.color = '#ffd700';
+        statusEl.textContent = 'Enviando mensaje...';
+        setTimeout(() => {
+            statusEl.style.color = '#00ff00';
+            statusEl.textContent = 'Gracias por contactarnos. Te responderemos pronto.';
+            form.reset();
+        }, 1500);
+    };
+}
+// Login
+function iniciarLoginForm() {
+    const form = document.getElementById('login-form');
+    const statusEl = document.getElementById('login-status');
+    if (!form || !statusEl) return;
+    form.onsubmit = e => {
+        e.preventDefault();
+        statusEl.textContent = 'Verificando...';
+        fetch('login.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: form['email-login'].value.trim(),
+                password: form['password-login'].value,
+                role: form['role-login'].value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                currentUser = data.user;
+                statusEl.style.color = "#00bb00";
+                statusEl.textContent = "¡Bienvenido!";
+                renderMenu();
+                setTimeout(() => loadPage(currentUser.role), 900);
+            } else {
+                statusEl.style.color = "#bb0000";
+                statusEl.textContent = data.message || "Credenciales incorrectas";
+            }
+        })
+        .catch(() => {
+            statusEl.style.color = "#bb0000";
+            statusEl.textContent = "Error de red";
+        });
+    };
+}
+function logout() {
+    currentUser = null;
+    renderMenu();
+    loadPage('inicio');
+}
+// ADMIN
+function iniciarAdminArea() {
+    const form = document.getElementById('form-agregar-moderador');
+    const statusMod = document.getElementById('admin-status-mod');
+    form.onsubmit = e => {
+        e.preventDefault();
+        fetch('registerModerador.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: document.getElementById('admin-nombre-moderador').value.trim(),
+                email: document.getElementById('admin-email-moderador').value.trim(),
+                password: document.getElementById('admin-password-moderador').value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            statusMod.textContent = data.message;
+            statusMod.style.color = data.success ? '#00bb00' : '#bb0000';
+            if (data.success) form.reset();
+        })
+        .catch(() => {
+            statusMod.textContent = "Error de red";
+            statusMod.style.color = "#bb0000";
+        });
+    };
+}
+// MODERADOR
+function iniciarModeradorArea() {
+    // Registrar pasante
+    const statusPasante = document.getElementById('status-registrar-pasante');
+    const formPasante = document.getElementById('form-registrar-pasante');
+    formPasante.onsubmit = e => {
+        e.preventDefault();
+        fetch('registerPasante.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: document.getElementById('mod-nombre-pasante').value.trim(),
+                email: document.getElementById('mod-email-pasante').value.trim(),
+                password: document.getElementById('mod-password-pasante').value,
+                nota: Number(document.getElementById('mod-nota-pasante').value),
+                horasTotales: Number(document.getElementById('mod-horas-totales').value)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            statusPasante.textContent = data.message;
+            statusPasante.style.color = data.success ? '#00bb00' : '#bb0000';
+            if (data.success) {
+                formPasante.reset();
+                renderListaPasantesModerador();
+            }
+        })
+        .catch(() => {
+            statusPasante.textContent = "Error de red";
+            statusPasante.style.color = "#bb0000";
+        });
+    };
+    // Registrar empresa
+    const statusEmpresa = document.getElementById('status-registrar-empresa');
+    const formEmpresa = document.getElementById('form-registrar-empresa');
+    formEmpresa.onsubmit = e => {
+        e.preventDefault();
+        fetch('registerEmpresa.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombre: document.getElementById('mod-nombre-empresa').value.trim(),
+                importancia: document.getElementById('mod-importancia-empresa').value,
+                ubicacion: document.getElementById('mod-ubicacion-empresa').value.trim()
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            statusEmpresa.textContent = data.message;
+            statusEmpresa.style.color = data.success ? '#00bb00' : '#bb0000';
+            if (data.success) {
+                formEmpresa.reset();
+                renderListaEmpresasModerador();
+            }
+        })
+        .catch(() => {
+            statusEmpresa.textContent = "Error de red";
+            statusEmpresa.style.color = "#bb0000";
+        });
+    };
+    renderListaPasantesModerador();
+    renderListaEmpresasModerador();
+}
+
+function renderListaEmpresasModerador() {
+    const listadoEmpresas = document.getElementById('listado-empresas-moderador');
+    listadoEmpresas.innerHTML = 'Cargando...';
+    fetch('listarEmpresas.php')
+        .then(res => res.json())
+        .then(data => {
+            if(!data.success || !data.empresas.length) {
+                listadoEmpresas.textContent = 'No hay empresas registradas.';
+                return;
+            }
+            listadoEmpresas.innerHTML = '';
+            data.empresas.forEach(e => {
+                listadoEmpresas.innerHTML += `
+                <li style="background: rgba(255,255,255,0.10); margin-bottom:8px; border-radius:6px; padding:10px; color:#fff;">
+                    <b style="color:#ffd700;">${e.nombre}</b> <br>
+                    <b>Importancia:</b> ${e.importancia} <br>
+                    <b>Ubicación:</b> ${e.ubicacion}
+                </li>
+                `;
+            });
+        });
+}
+function renderListaPasantesModerador() {
+    const listadoPasantes = document.getElementById('listado-pasantes-moderador');
+    listadoPasantes.innerHTML = 'Cargando...';
+    fetch('listarPasantes.php')
+        .then(res => res.json())
+        .then(data => {
+            if(!data.success || !data.pasantes.length) {
+                listadoPasantes.textContent = 'No hay pasantes registrados.';
+                return;
+            }
+            listadoPasantes.innerHTML = '';
+            data.pasantes.forEach(p => {
+                listadoPasantes.innerHTML += `
+                <div style="background: rgba(255,255,255,0.12); margin-bottom:15px; border-radius:8px; padding:16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); color: #fff;">
+                    <h4 style="color:#ffd700; margin-bottom:4px;">${p.nombre}</h4>
+                    <div><b>Email:</b> ${p.email}</div>
+                    <div><b>Nota:</b> ${p.nota}</div>
+                    <div><b>Horas Totales:</b> ${p.horas_totales}</div>
+                    <div><b>Horas Cumplidas:</b> ${p.horas_cumplidas}</div>
+                    <div><b>Empresa Asignada:</b> ${p.asignado_empresa || "Sin asignar"}</div>
+                </div>
+                `;
+            });
+        });
+}
+window.onload = function() {
+    renderMenu();
+    loadPage('inicio');
+};
+</script>
+</body>
+</html>
